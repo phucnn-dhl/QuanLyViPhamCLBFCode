@@ -111,8 +111,8 @@ Daily scrum should answer:
 
 This codebase is a standard C project with file-based persistence. Be strict about:
 
-- `C99` compatibility
-- `gcc -std=c99 -Wall -Wextra`
+- `C17` compatibility
+- `gcc -std=c17 -Wall -Wextra`
 - no unnecessary global variables
 - immediate persistence after mutation operations
 - small, explicit module boundaries

@@ -1,8 +1,8 @@
 ---
 stepsCompleted: [1, 2, 3, 4]
 inputDocuments:
-  - debai/QuanLyViPhamCLBFCode_V1.md
-  - debai/Rule_TrainC.md
+  - requirement-docs/QuanLyViPhamCLBFCode_V1.md
+  - requirement-docs/Rule_TrainC.md
   - _bmad-output/planning-artifacts/architecture.md
 workflowType: 'epics'
 project_name: 'fcode trainc'
@@ -17,7 +17,7 @@ completedAt: '2026-04-19'
 
 ## Overview
 
-This document provides the complete epic and story breakdown for **fcode trainc** — F-Code CLB Violation Management System. Requirements are decomposed from the project spec (`debai/QuanLyViPhamCLBFCode_V1.md`) and technical decisions from `architecture.md`.
+This document provides the complete epic and story breakdown for **fcode trainc** — F-Code CLB Violation Management System. Requirements are decomposed from the project spec (`requirement-docs/QuanLyViPhamCLBFCode_V1.md`) and technical decisions from `architecture.md`.
 
 ## Requirements Inventory
 
@@ -62,7 +62,7 @@ FR-2.11: Tìm kiếm vi phạm theo khoảng thời gian (Tùy chọn) — Nhậ
 NFR-1: Data durability — Save to file after every mutation operation, ensuring zero data loss on crash/exit
 NFR-2: Capacity — Support maximum 1,000 members and 10,000 violations at any time
 NFR-3: Security — 3 failed login attempts = account lock; role-based menu access (Member vs BCN)
-NFR-4: Portability — 100% standard C (C99) only, no external libraries, must compile with gcc/MinGW
+NFR-4: Portability — 100% standard C (C17) only, no external libraries, must compile with gcc/MinGW
 NFR-5: No global variables — Avoid unnecessary global variables (scoring criterion 5.2)
 NFR-6: Code organization — Split into multiple .h/.c modules, header guards (#ifndef), consistent naming
 NFR-7: Language purity — 100% pure C, absolutely no C++, Python, Java or any mixed-language code
@@ -155,7 +155,7 @@ So that the team can start implementing features immediately with consistent bui
 
 **Given** the project repository is initialized
 **When** a developer runs `make`
-**Then** the project compiles successfully with zero warnings using gcc -std=c99 -Wall -Wextra
+**Then** the project compiles successfully with zero warnings using gcc -std=c17 -Wall -Wextra
 **And** the executable is placed in `bin/fcode-trainc`
 
 **Given** the project structure exists

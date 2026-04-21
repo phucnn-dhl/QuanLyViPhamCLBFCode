@@ -1,8 +1,8 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
 inputDocuments:
-  - debai/QuanLyViPhamCLBFCode_V1.md
-  - debai/Rule_TrainC.md
+  - requirement-docs/QuanLyViPhamCLBFCode_V1.md
+  - requirement-docs/Rule_TrainC.md
 workflowType: 'architecture'
 project_name: 'fcode trainc'
 user_name: 'Admin'
@@ -45,7 +45,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 ### Technical Constraints & Dependencies
 
-- Language: C (C99 or later), standard library only
+- Language: C17 (`-std=c17`), standard library only
 - No dynamic linking, no threads, no networking
 - File-based persistence (.dat files in `data/` directory)
 - Suggested compiler: gcc/MinGW
@@ -98,21 +98,22 @@ fcode-trainc/
 │   ├── members.dat
 │   ├── violations.dat
 │   └── accounts.dat
-└── debai/                   # Requirements documents (reference only)
+└── requirement-docs/                   # Requirements documents (reference only)
 ```
 
 ### Architectural Decisions
 
 **Language & Compiler:**
-- C99 standard (`-std=c99`), compiled with gcc/MinGW (default, for evaluation compatibility)
+- C17 standard (`-std=c17 -m64`), compiled with gcc/MinGW (default, for evaluation compatibility)
+- 64-bit target ensures fixed `size_t` and `time_t` (8 bytes on all platforms)
 - Development: `make CC=clang` — better error messages, faster compilation
-- Warning flags: `-Wall -Wextra`
+- Warning flags: `-Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wformat=2 -Wformat-nonliteral -Wformat-security -Wfloat-equal -Wundef -Wsign-conversion -Wcast-align -Wcast-qual -Wmissing-prototypes -Wmissing-declarations -Wunreachable-code -Wnull-dereference -Wimplicit-fallthrough -Wswitch-enum -Wpointer-arith`
 
 **Code Quality Toolchain (LLVM):**
 - **clang-format** — auto-format all `.c`/`.h` files before commit, ensures team-wide style consistency
 - **clang-tidy** — static analysis with checks: `bugprone-*`, `readability-*`, `performance-*` (no `modernize-*` — this is pure C, not C++)
 - Run `clang-format -i src/*.c include/*.h` before each commit
-- Run `clang-tidy src/*.c -- -std=c99 -Iinclude` before final submission
+- Run `clang-tidy src/*.c -- -std=c17 -Iinclude` before final submission
 
 **Code Organization:**
 - Each module = one `.h` in `include/` (declarations) + one `.c` in `src/` (implementations)
@@ -137,7 +138,7 @@ fcode-trainc/
 **Makefile Structure (key variables):**
 ```makefile
 CC      = gcc
-CFLAGS  = -std=c99 -Wall -Wextra -Iinclude
+CFLAGS  = -std=c17 -m64 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wformat=2 -Wformat-nonliteral -Wformat-security -Wfloat-equal -Wundef -Wsign-conversion -Wcast-align -Wcast-qual -Wmissing-prototypes -Wmissing-declarations -Wunreachable-code -Wnull-dereference -Wimplicit-fallthrough -Wswitch-enum -Wpointer-arith -Iinclude
 SRCDIR  = src
 INCDIR  = include
 BUILDDIR = build
@@ -258,8 +259,15 @@ Member struct includes `isActive` field (int). Set to `STATUS_OUT_CLB` when Out 
 
 **Read/Write Strategy:**
 - On startup: read count from header → `fread` all records into arrays
-- On mutation: `fopen("wb")` → `fwrite` count + all records → `fclose`
+- On mutation: use **atomic write** pattern to prevent data loss on crash:
+  1. `fopen("filename.dat.tmp", "wb")` — write to temp file
+  2. `fwrite` count header + all records
+  3. `fclose` the temp file
+  4. `remove("filename.dat")` — delete old file
+  5. `rename("filename.dat.tmp", "filename.dat")` — atomically replace
 - Always rewrite entire file to prevent corruption
+- On startup: if `.tmp` files exist (crash residue), delete them and use `.dat` files
+- **Rationale**: If the program crashes during step 2–3, the original `.dat` file is untouched. Only after successful write + close does the temp replace the original. This prevents catastrophic data loss on power failure or segfault.
 
 **File Corruption Handling:**
 - On startup: if `.dat` files do not exist → create empty files with header (record count = 0)
@@ -474,7 +482,7 @@ Nhap lua chon: _
 - Run `make format` before every commit
 
 **Pattern Enforcement:**
-- Compile with `-Wall -Wextra` — zero warnings allowed
+- Compile with full warning flags — zero warnings allowed
 - Run `clang-format -i src/*.c include/*.h` before push — no manual style debates
 - Each member commits to their assigned module(s)
 - Code review before merge to main branch
@@ -527,7 +535,7 @@ fcode-trainc/
 │   ├── members.dat               # Member records (binary)
 │   ├── violations.dat            # Violation records (binary)
 │   └── accounts.dat              # Account/login records (binary)
-└── debai/                        # Requirements documents (reference only)
+└── requirement-docs/                        # Requirements documents (reference only)
 ```
 
 ### Architectural Boundaries
@@ -720,7 +728,7 @@ int member_delete(AppDatabase *db, const char *studentId);
 
 ### Coherence Validation ✅
 
-**Decision Compatibility:** All decisions work together — static arrays + binary files + C99 + Makefile + module structure are fully compatible. No contradictions.
+**Decision Compatibility:** All decisions work together — static arrays + binary files + C17 + Makefile + module structure are fully compatible. No contradictions.
 
 **Pattern Consistency:** Naming (`moduleName_action`), header guards, `fgets` input, error prefixes (`[LOI]`/`[OK]`) are consistent across all modules.
 
