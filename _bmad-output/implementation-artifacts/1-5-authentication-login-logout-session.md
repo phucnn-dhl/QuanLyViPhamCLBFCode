@@ -32,6 +32,7 @@ so that I can access the system with my assigned role.
   - [ ] reject locked accounts
   - [ ] compare password
   - [ ] increment and persist `failCount`
+  - [ ] reset `failCount` on successful login and persist the account state
   - [ ] lock account on third failure
 - [ ] Implement session handling (AC: 1, 3)
   - [ ] static current session in `auth.c`
@@ -48,6 +49,7 @@ so that I can access the system with my assigned role.
 - Session must be `static` inside `src/auth.c`; do not introduce `extern` globals. [Source: _bmad-output/planning-artifacts/architecture.md#Session-Management]
 - Login flow is already defined in architecture. Follow it exactly rather than inventing another model. [Source: _bmad-output/planning-artifacts/architecture.md#Login-Flow]
 - Logout returns to login flow, not process exit. [Source: _bmad-output/planning-artifacts/architecture.md#Data-Flow--Logout]
+- Successful login resets `failCount` to `0`; failed login increments and may lock the account.
 
 ### References
 
@@ -68,4 +70,3 @@ gpt-5
 ### File List
 
 - `_bmad-output/implementation-artifacts/1-5-authentication-login-logout-session.md`
-

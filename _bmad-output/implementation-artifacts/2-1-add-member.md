@@ -33,6 +33,7 @@ so that the CLB member database is maintained.
   - [ ] validate email
   - [ ] enforce capacity limit
 - [ ] Create matching account record with password = MSSV
+- [ ] Map access role and member role correctly when creating the account/member pair
 - [ ] Persist `members` and `accounts` immediately
 
 ## Dev Notes
@@ -41,6 +42,7 @@ so that the CLB member database is maintained.
 - `Account.role` and `Member.role` are different fields. Do not conflate access role with fine-calculation role. [Source: _bmad-output/planning-artifacts/architecture.md#Two-Role-Systems-IMPORTANT--do-not-confuse]
 - Member capacity hard limit is 1000.
 - Save both affected files immediately after mutation.
+- Leader/Vice differs from regular Member in fine rate, not automatically in menu access. Only BCN gets BCN menu access.
 
 ### References
 
@@ -61,4 +63,3 @@ gpt-5
 ### File List
 
 - `_bmad-output/implementation-artifacts/2-1-add-member.md`
-

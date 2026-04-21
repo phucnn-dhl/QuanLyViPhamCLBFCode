@@ -28,6 +28,7 @@ so that data is saved to binary `.dat` files on every mutation and loaded on sta
 - [ ] Implement startup load entrypoint (AC: 1, 2)
   - [ ] create missing `.dat` files
   - [ ] create first-run admin account if `accounts.dat` is empty
+  - [ ] clean up crash-residue `.tmp` files on startup
   - [ ] load all data into `AppDatabase`
 - [ ] Implement save functions for each store (AC: 3)
   - [ ] `members.dat`
@@ -43,6 +44,7 @@ so that data is saved to binary `.dat` files on every mutation and loaded on sta
 - On first run:
   - create empty files if missing
   - create default BCN account `ADMIN/ADMIN`
+- If `.tmp` files exist on startup, clean them up before normal load.
 - If files exist but cannot be read as valid format, fail clearly instead of guessing.
 
 ### References
@@ -50,6 +52,7 @@ so that data is saved to binary `.dat` files on every mutation and loaded on sta
 - Story definition: [Source: _bmad-output/planning-artifacts/epics.md#Story-14-File-IO--LoadSave-with-First-Run-Init]
 - File I/O architecture: [Source: _bmad-output/planning-artifacts/architecture.md#File-IO-Architecture]
 - First-run admin rule: [Source: _bmad-output/planning-artifacts/architecture.md#First-Run-Admin-Account-Implementation-Decision]
+- Startup cleanup and corruption behavior: [Source: _bmad-output/planning-artifacts/architecture.md#ReadWrite-Strategy]
 
 ## Dev Agent Record
 
@@ -64,4 +67,3 @@ gpt-5
 ### File List
 
 - `_bmad-output/implementation-artifacts/1-4-file-io-load-save-first-run-init.md`
-

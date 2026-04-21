@@ -22,6 +22,9 @@ so that the team can start implementing features immediately with consistent bui
 3. **Given** the project structure exists  
    **When** a developer runs `make format`  
    **Then** `clang-format` is applied to all `src/*.c` and `include/*.h` files
+4. **Given** the project structure exists  
+   **When** a developer runs `make tidy`  
+   **Then** `clang-tidy` runs against project source files using the `C17` compile context
 
 ## Tasks / Subtasks
 
@@ -30,6 +33,7 @@ so that the team can start implementing features immediately with consistent bui
   - [ ] Add a minimal `src/main.c` with `int main(void)` returning success
   - [ ] Ensure `build/` and `bin/` are treated as generated output, not permanent source folders
 - [ ] Create the initial Makefile (AC: 1, 2, 3)
+  - [ ] Add `make tidy`
   - [ ] Set target output to `bin/fcode-trainc`
   - [ ] Compile all `src/*.c` into `build/*.o`
   - [ ] Use `-std=c17` as the language standard
@@ -41,6 +45,7 @@ so that the team can start implementing features immediately with consistent bui
   - [ ] Keep headers in `include/` and implementations in `src/`
   - [ ] Do not introduce non-standard libraries or platform-specific code
 - [ ] Verify the story outcome locally (AC: 1, 2, 3)
+  - [ ] Run `make tidy`
   - [ ] Run `make`
   - [ ] Run `make clean`
   - [ ] Run `make format`
@@ -68,6 +73,7 @@ so that the team can start implementing features immediately with consistent bui
 - Preferred target name: `bin/fcode-trainc`
 - Generated object files belong under `build/`
 - `make format` should target `src/*.c` and `include/*.h`
+- `make tidy` should run `clang-tidy src/*.c -- -std=c17 -Iinclude`
 
 ### Architecture Compliance
 
@@ -99,6 +105,7 @@ so that the team can start implementing features immediately with consistent bui
   - `make` produces `bin/fcode-trainc`
   - `make clean` removes generated build output
   - `make format` runs against project source/header globs without failing
+  - `make tidy` runs against current project source with C17 include settings
 - Zero warnings is part of the AC, so keep the initial `main.c` minimal.
 
 ### Project Structure Notes
@@ -114,6 +121,7 @@ so that the team can start implementing features immediately with consistent bui
 - Directory structure and Makefile expectations: [Source: _bmad-output/planning-artifacts/architecture.md#Directory-Structure-Modular--srcincludebuildbin]
 - Compiler/tooling expectations: [Source: _bmad-output/planning-artifacts/architecture.md#Makefile-Structure-key-variables]
 - Code organization guardrails: [Source: _bmad-output/planning-artifacts/architecture.md#Code-Organization]
+- Tooling targets: [Source: _bmad-output/planning-artifacts/architecture.md#Development-Experience]
 
 ## Dev Agent Record
 
