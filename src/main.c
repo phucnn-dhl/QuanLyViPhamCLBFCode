@@ -1,6 +1,6 @@
 #include <stdio.h>
 
 int main(void) {
-  puts("fcode-trainc scaffold");
+  printf("Hello\n");
   return 0;
 }
