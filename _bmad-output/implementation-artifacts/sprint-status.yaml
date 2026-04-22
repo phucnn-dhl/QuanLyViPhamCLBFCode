@@ -44,7 +44,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   # === Epic 1: Project Setup & Authentication ===
   epic-1: in-progress
-  1-1-project-scaffold-build-system: review
+  1-1-project-scaffold-build-system: done
   1-2-data-types-constants: ready-for-dev
   1-3-utility-functions: ready-for-dev
   1-4-file-io-load-save-first-run-init: ready-for-dev
