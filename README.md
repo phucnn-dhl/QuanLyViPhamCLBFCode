@@ -26,71 +26,74 @@ Hiện tại, repo đang ở giai đoạn scaffold ban đầu: đã có `Makefil
 - Cơ chế lưu trữ: file `.dat`
 - Không sử dụng cơ sở dữ liệu, GUI hoặc thư viện ngoài C standard library
 
-## Cấu trúc thư mục
 
-```text
-.
-|-- Makefile
-|-- src/
-|   `-- main.c
-|-- include/
-|-- data/
-|-- build/
-|-- bin/
-|-- docs/
-|   |-- planning/
-|   |-- requirement-docs/
-|   |-- stories/
-|   |-- guidelines/
-|   `-- support/
-`-- CONTRIBUTING.md
-````
+
 
 ## Yêu cầu môi trường
 
-Môi trường khuyến nghị cho Windows là `MSYS2 UCRT64`.
+Tài liệu này dùng luồng `cmd` trên Windows.
 
-Nếu máy chưa cài gì, làm theo các bước sau:
+Nếu máy chưa cài gì, làm theo các bước sau trong `cmd`:
 
-1. Cài `MSYS2` vào đường dẫn ngắn, không dấu, không khoảng trắng, ví dụ `C:\msys64`
-2. Mở terminal `MSYS2 UCRT64`
-3. Chạy cập nhật hệ thống 2 lần:
+1. Cài `MSYS2` bằng Chocolatey:
 
-```bash
-pacman -Suy
-pacman -Suy
+```cmd
+choco install msys2 -y
 ```
 
-4. Cài toolchain và công cụ cần cho repo:
+Theo cấu hình phổ biến của Chocolatey, MSYS2 sẽ nằm ở:
 
-```bash
-pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-make mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-clang-tools-extra
+```text
+C:\tools\msys64
+```
+
+2. Cập nhật hệ thống MSYS2 từ `cmd`:
+
+```cmd
+C:\tools\msys64\usr\bin\bash.exe -lc "pacman -Suy --noconfirm"
+C:\tools\msys64\usr\bin\bash.exe -lc "pacman -Suy --noconfirm"
+```
+
+3. Cài toolchain và công cụ cần cho repo:
+
+```cmd
+C:\tools\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-make mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-clang-tools-extra"
+```
+
+4. Thêm toolchain UCRT64 vào PATH của phiên `cmd` hiện tại:
+
+```cmd
+set "PATH=C:\tools\msys64\ucrt64\bin;%PATH%"
+```
+
+5. Kiểm tra nhanh:
+
+```cmd
+gcc --version
+mingw32-make --version
+clang-format --version
+clang-tidy --version
 ```
 
 Sau khi cài xong, môi trường sẽ có:
 
 * `gcc`
-* `make`
+* `mingw32-make`
 * `clang-format`
 * `clang-tidy`
 
 Lưu ý quan trọng trên Windows:
 
-* Nên chạy project trong terminal `MSYS2 UCRT64`
-* Nếu thêm PATH thủ công, chỉ nên ưu tiên `C:\msys64\ucrt64\bin`
-* Không nên để `C:\msys64\usr\bin\make.exe` đứng trước toolchain UCRT64, vì dễ gây lỗi khi chạy `make`
+* Với cấu hình hiện tại, lệnh build chuẩn là `mingw32-make`
+* Khi dùng `cmd`, cần bảo đảm `C:\tools\msys64\ucrt64\bin` có trong PATH
+* Không nên dùng `C:\tools\msys64\usr\bin\make.exe`, vì dễ trộn môi trường MSYS và UCRT64
 
 ## Cách build và chạy
 
-Khuyến nghị mở terminal `MSYS2 UCRT64` tại thư mục repo rồi chạy:
+Mở `cmd`, vào thư mục repo, rồi chạy:
 
-```bash
-make
-```
-
-Nếu bạn đang chạy từ PowerShell/cmd bên ngoài MSYS2 và chưa map được `make`, có thể dùng:
-
-```powershell
+```cmd
+set "PATH=C:\tools\msys64\ucrt64\bin;%PATH%"
 mingw32-make
 ```
 
@@ -103,7 +106,7 @@ bin/fcode-trainc.exe
 
 Chạy chương trình trên Windows:
 
-```powershell
+```cmd
 .\bin\fcode-trainc.exe
 ```
 
@@ -111,29 +114,31 @@ Chạy chương trình trên Windows:
 
 Build project:
 
-```bash
-make
+```cmd
+set "PATH=C:\tools\msys64\ucrt64\bin;%PATH%"
+mingw32-make
 ```
 
 Xóa các file/thư mục sinh ra khi build:
 
-```bash
-make clean
+```cmd
+set "PATH=C:\tools\msys64\ucrt64\bin;%PATH%"
+mingw32-make clean
 ```
 
 Format source code:
 
-```bash
-make format
+```cmd
+set "PATH=C:\tools\msys64\ucrt64\bin;%PATH%"
+mingw32-make format
 ```
 
 Phân tích tĩnh bằng `clang-tidy`:
 
-```bash
-make tidy
+```cmd
+set "PATH=C:\tools\msys64\ucrt64\bin;%PATH%"
+mingw32-make tidy
 ```
-
-Nếu chạy ngoài terminal `MSYS2 UCRT64`, có thể thay `make` bằng `mingw32-make` tùy theo PATH của máy.
 
 ## Tài liệu liên quan
 
