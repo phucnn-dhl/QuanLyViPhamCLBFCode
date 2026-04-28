@@ -69,6 +69,8 @@ NFR-7: Language purity — 100% pure C, absolutely no C++, Python, Java or any m
 NFR-8: File persistence — Binary .dat files using fwrite/fread, load on startup, save on every mutation
 ```
 
+Naming convention note: use `PascalCase` for struct/type names, `camelCase` for shared struct fields defined by the requirement, `snake_case` for local variables, and `UPPER_SNAKE_CASE` for constants.
+
 ### Additional Requirements (from Architecture)
 
 ```

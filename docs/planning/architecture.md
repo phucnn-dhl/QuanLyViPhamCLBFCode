@@ -373,6 +373,8 @@ These are separate fields serving different purposes.
 - Boolean-returning functions: prefix `is_` or `has_` — `is_email_valid()`, `auth_is_locked()`
 
 **Variables:**
+- Priority note: when requirement examples and internal conventions differ, follow the requirement for shared data-model naming.
+- Shared struct fields use `camelCase` to match the requirement document: `fullName`, `studentId`, `violationTime`, `isPaid`, `memberCount`
 - `snake_case` — `member_count`, `current_session`, `total_fine`
 - Loop counters: `i`, `j`, `k` (short, conventional)
 - Constants: `UPPER_SNAKE_CASE` — `MAX_MEMBERS`, `REASON_ABSENT`

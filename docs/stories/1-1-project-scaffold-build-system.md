@@ -74,6 +74,7 @@ so that the team can start implementing features immediately with consistent bui
 - Generated object files belong under `build/`
 - `make format` should target `src/*.c` and `include/*.h`
 - `make tidy` should run `clang-tidy src/*.c -- -std=c17 -Iinclude`
+- Repo-level tooling config must not conflict with the requirement-driven naming used by later shared data models: struct/type names stay `PascalCase`, shared struct fields stay `camelCase`
 
 ### Architecture Compliance
 
@@ -81,6 +82,7 @@ so that the team can start implementing features immediately with consistent bui
 - Do not create module files in the repo root.
 - Use `int main(void)`, not `void main()`. [Source: _bmad-output/planning-artifacts/architecture.md#Anti-Patterns]
 - This story should not create application features beyond the scaffold.
+- Tooling created in this story should support later requirement-aligned naming instead of enforcing conflicting field conventions.
 
 ### File Structure Requirements
 
