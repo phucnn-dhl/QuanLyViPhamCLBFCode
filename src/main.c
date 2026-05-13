@@ -121,7 +121,11 @@ static void adminMenu(void) {
       violationCheckAllOutClb(&gDb);
       break;
     case 9:
+      reportSortMembersByViolations(&gDb);
+      break;
     case 10:
+      reportExportTxt(&gDb);
+      break;
     case 11:
       printf("[CANH BAO] Chua cai dat\n");
       break;

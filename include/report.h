@@ -3,7 +3,7 @@
 
 /**
  * @file report.h
- * @brief Report module — Story 4.1.
+ * @brief Report module - Stories 4.1, 4.2, and 4.3.
  *
  * Provides statistics and export functionalities for the system.
  */
@@ -24,5 +24,24 @@
  * @param db Pointer to the global application database.
  */
 void reportTeamStats(const AppDatabase *db);
+
+/**
+ * @brief Display members sorted by violation count.
+ *
+ * Uses a pointer-array copy of members and a self-implemented sort.
+ * The original members[] array order remains unchanged.
+ *
+ * @param db Pointer to the global application database.
+ */
+void reportSortMembersByViolations(const AppDatabase *db);
+
+/**
+ * @brief Export a violation report to a timestamped text file.
+ *
+ * The report includes team summaries and members with outstanding fines.
+ *
+ * @param db Pointer to the global application database.
+ */
+void reportExportTxt(const AppDatabase *db);
 
 #endif /* REPORT_H */

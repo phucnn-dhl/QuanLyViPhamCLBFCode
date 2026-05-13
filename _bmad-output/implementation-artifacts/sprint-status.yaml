@@ -71,7 +71,7 @@ development_status:
   # === Epic 4: Reports & Advanced Features ===
   epic-4: in-progress
   4-1-statistics-by-team: done
-  4-2-sort-members-by-violation-count: ready-for-dev
-  4-3-export-report-to-txt: ready-for-dev
+  4-2-sort-members-by-violation-count: done
+  4-3-export-report-to-txt: review
   4-4-search-violations-by-date-range: ready-for-dev
   epic-4-retrospective: optional
