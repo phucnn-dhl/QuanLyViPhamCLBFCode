@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-21
-last_updated: 2026-04-28
+last_updated: 2026-05-13
 project: fcode trainc
 project_key: NOKEY
 tracking_system: file-system
@@ -64,7 +64,7 @@ development_status:
   epic-3: in-progress
   3-1-record-violation: ready-for-dev
   3-2-out-clb-warning-enforcement: ready-for-dev
-  3-3-mark-paid-view-own-violations-fines: ready-for-dev
+  3-3-mark-paid-view-own-violations-fines: done
   3-4-view-all-violations-with-filters: ready-for-dev
   epic-3-retrospective: optional
 
