@@ -1,6 +1,7 @@
 #include "auth.h"
 #include "fileio.h"
 #include "member.h"
+#include "report.h"
 #include "types.h"
 #include "utils.h"
 #include "violation.h"
@@ -107,8 +108,10 @@ static void adminMenu(void) {
       break;
     case 5:
     case 6:
-    case 7:
       printf("[CANH BAO] Chua cai dat\n");
+      break;
+    case 7:
+      reportTeamStats(&gDb);
       break;
     case 8:
       violationCheckAllOutClb(&gDb);
@@ -130,7 +133,7 @@ static void adminMenu(void) {
     case 15: {
       printf("Nhap MSSV can reset mat khau: ");
       char targetId[MAX_MSSV_LEN];
-      read_string(targetId, MAX_MSSV_LEN);
+      readString(targetId, MAX_MSSV_LEN);
       authResetPassword(&gDb, targetId);
       break;
     }

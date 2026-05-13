@@ -1,3 +1,6 @@
+#ifndef _WIN32
+#define _POSIX_C_SOURCE 200809L
+#endif
 #include "utils.h"
 #include "types.h"
 #include <ctype.h>
@@ -5,11 +8,17 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 /* ============================================================
  * INPUT HANDLING HELPERS
  * ============================================================ */
 
-void read_string(char *buffer, size_t size) {
+void readString(char *buffer, size_t size) {
   if (buffer == NULL || size == 0) {
     return;
   }
@@ -30,7 +39,7 @@ void read_string(char *buffer, size_t size) {
   }
 }
 
-int read_int(int *value) {
+int readInt(int *value) {
   int result = scanf("%d", value);
   int c;
   while ((c = getchar()) != '\n' && c != EOF) {
@@ -43,7 +52,7 @@ int read_int(int *value) {
  * VALIDATION HELPERS
  * ============================================================ */
 
-int is_email_valid(const char *email) {
+int isEmailValid(const char *email) {
   if (email == NULL || email[0] == '\0') {
     return 0;
   }
@@ -98,14 +107,15 @@ int is_email_valid(const char *email) {
   return 1;
 }
 
-int is_id_valid(const char *id) {
+int isIdValid(const char *id) {
   if (id == NULL || strlen(id) == 0) {
     return 0;
   }
 
   size_t len = strlen(id);
 
-  /* MSSV should be at least 4 characters (e.g. "ADMIN") and at most MAX_MSSV_LEN-1 */
+  /* MSSV should be at least 4 characters (e.g. "ADMIN") and at most
+   * MAX_MSSV_LEN-1 */
   if (len < 4 || len >= MAX_MSSV_LEN) {
     return 0;
   }
@@ -124,7 +134,7 @@ int is_id_valid(const char *id) {
   return 1;
 }
 
-int is_phone_valid(const char *phone) {
+int isPhoneValid(const char *phone) {
   if (phone == NULL || phone[0] == '\0') {
     return 0;
   }
@@ -159,20 +169,20 @@ int is_phone_valid(const char *phone) {
  * TIME & DATE HELPERS
  * ============================================================ */
 
-void format_time(time_t t, char *buffer, size_t buf_size) {
-  if (buffer == NULL || buf_size == 0) {
+void formatTime(time_t t, char *buffer, size_t bufSize) {
+  if (buffer == NULL || bufSize == 0) {
     return;
   }
 
   struct tm *timeinfo = localtime(&t);
   if (timeinfo != NULL) {
-    strftime(buffer, buf_size, "%d/%m/%Y %H:%M", timeinfo);
+    strftime(buffer, bufSize, "%d/%m/%Y %H:%M", timeinfo);
   } else {
     buffer[0] = '\0';
   }
 }
 
-int parse_date(const char *buffer, time_t *t, int is_end_of_day) {
+int parseDate(const char *buffer, time_t *t, int isEndOfDay) {
   if (buffer == NULL || t == NULL) {
     return 0;
   }
@@ -192,7 +202,7 @@ int parse_date(const char *buffer, time_t *t, int is_end_of_day) {
   timeinfo.tm_year = y - 1900;
   timeinfo.tm_isdst = -1; /* let system determine DST */
 
-  if (is_end_of_day) {
+  if (isEndOfDay) {
     timeinfo.tm_hour = 23;
     timeinfo.tm_min = 59;
     timeinfo.tm_sec = 59;
@@ -215,8 +225,8 @@ int parse_date(const char *buffer, time_t *t, int is_end_of_day) {
  * DISPLAY NAME MAPPERS
  * ============================================================ */
 
-const char *team_name(int team_id) {
-  switch (team_id) {
+const char *teamName(int teamId) {
+  switch (teamId) {
   case TEAM_ACADEMIC:
     return "Hoc thuat";
   case TEAM_PLANNING:
@@ -230,8 +240,8 @@ const char *team_name(int team_id) {
   }
 }
 
-const char *member_role_name(int role_id) {
-  switch (role_id) {
+const char *memberRoleName(int roleId) {
+  switch (roleId) {
   case MEMBER_ROLE_MEMBER:
     return "Thanh vien";
   case MEMBER_ROLE_LEADER:
@@ -243,8 +253,8 @@ const char *member_role_name(int role_id) {
   }
 }
 
-const char *account_role_name(int role_id) {
-  switch (role_id) {
+const char *accountRoleName(int roleId) {
+  switch (roleId) {
   case ACCOUNT_ROLE_MEMBER:
     return "Thanh vien";
   case ACCOUNT_ROLE_BCN:
@@ -254,8 +264,8 @@ const char *account_role_name(int role_id) {
   }
 }
 
-const char *reason_name(int reason_id) {
-  switch (reason_id) {
+const char *reasonName(int reasonId) {
+  switch (reasonId) {
   case REASON_NO_JACKET:
     return "Khong mac ao CLB";
   case REASON_ABSENT:
@@ -267,4 +277,35 @@ const char *reason_name(int reason_id) {
   default:
     return "Khong xac dinh";
   }
+}
+
+/* ============================================================
+ * PATH & DIRECTORY HELPERS
+ * ============================================================ */
+
+void getExeDir(char *buffer, size_t size) {
+  if (buffer == NULL || size == 0) {
+    return;
+  }
+#ifdef _WIN32
+  GetModuleFileNameA(NULL, buffer, (DWORD)size);
+  char *lastSlash = strrchr(buffer, '\\');
+  if (lastSlash != NULL) {
+    *lastSlash = '\0';
+  }
+#else
+  /* POSIX implementation using /proc/self/exe */
+  ssize_t len = readlink("/proc/self/exe", buffer, size - 1);
+  if (len != -1) {
+    buffer[len] = '\0';
+    char *lastSlash = strrchr(buffer, '/');
+    if (lastSlash != NULL) {
+      *lastSlash = '\0';
+    }
+  } else {
+    /* Fallback to current directory */
+    strncpy(buffer, ".", size);
+    buffer[size - 1] = '\0';
+  }
+#endif
 }

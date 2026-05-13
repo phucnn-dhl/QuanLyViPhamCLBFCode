@@ -47,24 +47,6 @@ so that data is saved to binary `.dat` files on every mutation and loaded on sta
 - If `.tmp` files exist on startup, clean them up before normal load.
 - If files exist but cannot be read as valid format, fail clearly instead of guessing.
 
-## Post-Implementation Fixes
-
-### Fix #1: Backup-based replace for Windows safety
-- **Problem:** `replaceStoreFile()` gọi `remove(dataFile)` rồi `rename(tmp, dataFile)`. Nếu `rename()` fail trên Windows (file bị lock), data bị mất hoàn toàn.
-- **Fix:** Dùng `.bak` file — rename `.dat` → `.bak` trước, rồi `.tmp` → `.dat`. Nếu rename fail thì restore từ `.bak`.
-
-### Fix #2: Generic `saveStore()` — bỏ code duplication
-- **Problem:** `fileioSaveMembers`, `fileioSaveViolations`, `fileioSaveAccounts` gần như identical (~90 dòng duplicated).
-- **Fix:** Extract `saveStore()` static generic nhận buffer + itemSize + count. 3 public functions thành thin wrappers (~15 dòng mỗi cái).
-
-### Fix #3: Tách `fileioLoadAll()` thành helper functions
-- **Problem:** `fileioLoadAll()` dài 85 dòng, xử lý cả tmp recovery + load accounts + init admin + load members + load violations.
-- **Fix:** Tách thành `loadAccounts()`, `loadMembers()`, `loadViolations()`. `fileioLoadAll()` chỉ còn ~15 dòng gọi 3 helpers.
-
-### Fix #6: Explicit `fflush()` trước `fclose()`
-- **Problem:** `closeFileChecked()` chỉ gọi `fclose()` không có `fflush()` trước. Trên một số platform cũ, data có thể chưa được flush xuống disk.
-- **Fix:** Thêm `fflush(fp)` trước `fclose(fp)` trong `closeFileChecked()`.
-
 ### References
 
 - Story definition: [Source: _bmad-output/planning-artifacts/epics.md#Story-14-File-IO--LoadSave-with-First-Run-Init]

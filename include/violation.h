@@ -1,10 +1,12 @@
 #ifndef VIOLATION_H
 #define VIOLATION_H
 
-/* violation.h — Story 3.1 & 3.2
- * Violation recording, Out CLB warning/enforcement.
+/**
+ * @file violation.h
+ * @brief Violation management module — Stories 3.1 & 3.2.
  *
- * Depends on: types.h, member.h (for memberFindById) */
+ * Handles recording violations, penalty calculation, and threshold checks.
+ */
 
 #include "types.h"
 
@@ -57,3 +59,23 @@ int violationCheckOutThreshold(AppDatabase *db, Member *member);
 void violationCheckAllOutClb(AppDatabase *db);
 
 #endif /* VIOLATION_H */
+
+/* ============================================================
+ * Story 3.3 — Mark Paid & View Own Violations/Fines
+ * ============================================================ */
+
+/**
+ * @brief View all violations of the currently logged-in member.
+ */
+void violationViewOwn(AppDatabase *db);
+
+/**
+ * @brief View unpaid fines and total debt of the currently logged-in member.
+ */
+void violationViewFines(AppDatabase *db);
+
+/**
+ * @brief Admin marks a specific violation as paid and recalculates totalFine.
+ */
+int violationMarkPaid(AppDatabase *db);
+
