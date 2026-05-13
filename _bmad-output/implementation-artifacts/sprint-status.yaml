@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-21
-last_updated: 2026-04-21
+last_updated: 2026-04-28
 project: fcode trainc
 project_key: NOKEY
 tracking_system: file-system
@@ -44,10 +44,10 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   # === Epic 1: Project Setup & Authentication ===
   epic-1: in-progress
-  1-1-project-scaffold-build-system: review
-  1-2-data-types-constants: ready-for-dev
-  1-3-utility-functions: ready-for-dev
-  1-4-file-io-load-save-first-run-init: ready-for-dev
+  1-1-project-scaffold-build-system: done
+  1-2-data-types-constants: done
+  1-3-utility-functions: done
+  1-4-file-io-load-save-first-run-init: done
   1-5-authentication-login-logout-session: ready-for-dev
   1-6-change-reset-password: ready-for-dev
   epic-1-retrospective: optional
@@ -61,17 +61,17 @@ development_status:
   epic-2-retrospective: optional
 
   # === Epic 3: Violation Tracking & Enforcement ===
-  epic-3: backlog
-  3-1-record-violation: backlog
-  3-2-out-clb-warning-enforcement: backlog
-  3-3-mark-paid-view-own-violations-fines: backlog
-  3-4-view-all-violations-with-filters: backlog
+  epic-3: in-progress
+  3-1-record-violation: ready-for-dev
+  3-2-out-clb-warning-enforcement: ready-for-dev
+  3-3-mark-paid-view-own-violations-fines: ready-for-dev
+  3-4-view-all-violations-with-filters: ready-for-dev
   epic-3-retrospective: optional
 
   # === Epic 4: Reports & Advanced Features ===
-  epic-4: backlog
-  4-1-statistics-by-team: backlog
-  4-2-sort-members-by-violation-count: backlog
-  4-3-export-report-to-txt: backlog
-  4-4-search-violations-by-date-range: backlog
+  epic-4: in-progress
+  4-1-statistics-by-team: ready-for-dev
+  4-2-sort-members-by-violation-count: ready-for-dev
+  4-3-export-report-to-txt: ready-for-dev
+  4-4-search-violations-by-date-range: ready-for-dev
   epic-4-retrospective: optional

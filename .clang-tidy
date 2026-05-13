@@ -1,7 +1,12 @@
 ---
+# Check all header files too
 HeaderFilterRegex: '.*'
+
+# Do not check system headers like stdio.h, stdlib.h
 SystemHeaders: false
 
+# Turn off all checks first with -*,
+# then turn on only the groups we want
 Checks: >
   -*,
   llvm-*,
@@ -9,26 +14,52 @@ Checks: >
   misc-*,
   performance-*,
   bugprone-*,
-  readability-*,
+  readability-*
 
 CheckOptions:
+  # Constants should use UPPER_CASE
+  # Example: MAX_SIZE, DEFAULT_PORT
   - key: readability-identifier-naming.ConstantCase
     value: UPPER_CASE
+
+  # Macros should use UPPER_CASE
+  # Example: #define MAX_MEMBERS 1000
   - key: readability-identifier-naming.MacroDefinitionCase
     value: UPPER_CASE
 
+  # Normal variables should use camelBack (theo requirement)
+  # Example: memberCount, totalFine
   - key: readability-identifier-naming.VariableCase
-    value: lower_case
+    value: camelBack
+
+  # Global variables should also use camelBack
   - key: readability-identifier-naming.GlobalVariableCase
-    value: lower_case
+    value: camelBack
+
+  # Function names should use snake_case
+  # Example: auth_login, member_add
   - key: readability-identifier-naming.FunctionCase
     value: lower_case
+
+  # Global/public function names should also use snake_case
   - key: readability-identifier-naming.GlobalFunctionCase
     value: lower_case
-  - key: readability-identifier-naming.ParameterCase
-    value: lower_case
 
+  # Function parameters should use camelBack
+  # Example: studentId, memberIndex
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+
+  # Struct names should use CamelCase (PascalCase)
+  # Example: Member, Violation, AppDatabase
   - key: readability-identifier-naming.StructCase
     value: CamelCase
+
+  # Struct fields should use camelBack (theo requirement)
+  # Example: memberCount, totalFine
+  - key: readability-identifier-naming.StructMemberCase
+    value: camelBack
+
+  # Public members should also use camelBack
   - key: readability-identifier-naming.PublicMemberCase
-    value: lower_case
+    value: camelBack
