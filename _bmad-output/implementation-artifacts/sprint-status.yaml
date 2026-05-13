@@ -65,7 +65,7 @@ development_status:
   3-1-record-violation: ready-for-dev
   3-2-out-clb-warning-enforcement: ready-for-dev
   3-3-mark-paid-view-own-violations-fines: done
-  3-4-view-all-violations-with-filters: ready-for-dev
+  3-4-view-all-violations-with-filters: done
   epic-3-retrospective: optional
 
   # === Epic 4: Reports & Advanced Features ===
