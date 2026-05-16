@@ -81,9 +81,8 @@ From the club-operation perspective, the delivered system also targets these pra
 
 **Not fully delivered / limited versus the requirement intent:**
 
-- When recording a violation, the implementation searches members by `studentId` only. The requirement wording allows selecting by `MSSV/tên`, but name-based lookup is not implemented in the current build.
-- Final administrative metadata for mentor, team roster, task ownership, and leader evaluation is not stored in the repository and must be completed manually before submission.
-- The requirement document and architecture discussion contain a threshold ambiguity for Out CLB due to absences. The current code follows the interpretation implemented in the project logic: warning at 3 consecutive absences and confirm Out CLB from the 4th absence onward.
+- Passwords are stored in plain text in `accounts.dat`. There is no hashing, so anyone with file access can read all credentials directly.
+- The auto-created `ADMIN` account has no corresponding `Member` entry, causing `memberViewProfile()` to fail when accessed from the BCN menu.
 
 # Section 2. Functional Requirements - Final Status
 
@@ -110,7 +109,7 @@ The table below records the final implementation status as of **16 May 2026**.
 | 17 | Search violations by date range | Advanced | **Done** | Uses normalized day boundaries |
 | 18 | Persistent binary storage with first-run initialization | **Required** | **Done** | Auto-creates `ADMIN/ADMIN` on first run |
 | 19 | Crash-safe temporary-file recovery | Advanced | **Done** | `.tmp` and `.bak` strategy in `fileio.c` |
-| 20 | Select member when recording violation | Optional | **Done** | Member selection is supported in the current admin violation-recording flow |
+| 20 | Select member when recording violation | Optional | **Done** | Supports lookup by MSSV (exact match) or by name (case-insensitive substring). Displays a numbered selection list when multiple name matches are found. |
 
 Implementation traceability by project epic:
 
@@ -337,9 +336,9 @@ The current build is functional, but the following issues or limitations remain.
 | --- | --- | --- | --- |
 | **Admin self-profile mismatch** | The auto-created `ADMIN` login account is not backed by a `Member` record. If the operator uses admin menu option `12` after logging in as `ADMIN`, `memberViewProfile()` cannot find matching member data. | Medium | Either create a linked admin member record on first run or hide that menu option for the synthetic `ADMIN` account. |
 | **Invalid calendar dates may be normalized instead of rejected** | `parseDate()` uses `mktime()` after parsing `dd/mm/yyyy`. Inputs like `31/02/2026` can be normalized by the C runtime into a different valid date instead of being rejected explicitly. | Medium | Validate day/month/year combinations before calling `mktime()`, or verify that the normalized `struct tm` still matches the original input. |
-| **Violation record lookup is MSSV-only** | The requirement wording allows selecting a member by `MSSV/tên`, but `violationRecord()` currently asks only for `studentId`. | Low | Add search helpers that support partial or exact name matching and a selection menu when multiple matches exist. |
+| **Violation record lookup by name partially implemented** | `violationRecord()` now supports both MSSV exact match and case-insensitive name substring search via `memberSearchByName()`. When multiple members match the name keyword, a numbered selection list is displayed. However, the search is limited to exact substring matching and does not support fuzzy or diacritic-aware matching for Vietnamese names. | Low | Consider adding diacritic-normalized search for better Vietnamese name matching. |
 | **Member self-view does not special-case Out CLB penalties** | In self-service violation history, status is derived only from `isPaid`. If a violence violation exists, the member-facing table can display it as unpaid instead of `OUT CLB`. | Low | Reuse the same status mapping logic used by the admin-side violation table. |
-| **Requirement ambiguity around absence threshold** | The requirement table mentions warning logic from `>= 2` and Out CLB at `= 3`, while the broader requirement narrative says “quá 3 buổi liên tiếp”. The code implements warning at `3` and Out CLB confirmation at `4+`. | Low | Align the requirement wording and implementation in one final accepted rule, then update code and report consistently. |
+| **Requirement ambiguity around absence threshold** | The requirement table mentions warning logic from `>= 2` and Out CLB at `= 3`, while the broader requirement narrative states “more than 3 consecutive absences”. The code implements warning at `3` and Out CLB confirmation at `4+`. | Low | Align the requirement wording and implementation in one final accepted rule, then update code and report consistently. |
 | **Demo-data default password differs from normal creation flow** | Real member creation uses default password = MSSV, but `seed_data.c` initializes demo member passwords as `123456`. This is practical for demoing but not perfectly consistent with normal business flow. | Low | Change seed accounts to use MSSV as password, or document clearly that demo data uses a custom convenience password. |
 
 Verification evidence available in the repository:
@@ -353,15 +352,15 @@ Verification evidence available in the repository:
 
 | **No.** | **Full Name** | **Role** | **Tasks Performed** |
 | --- | --- | --- | --- |
-| 1 | **Dam Le Tuan Anh** | Team Leader | Thiết kế cấu trúc tổng thể project (`types.h`, `Makefile`, sơ đồ module). Phối hợp phân công story theo từng epic. Tham gia triển khai các luồng nghiệp vụ chính trong `main.c` (menu BCN/menu thành viên, routing theo role). Tổng hợp tích hợp các module riêng lẻ thành bản build hoàn chỉnh. Review code tổng thể, điều phối testing, chuẩn bị demo và chốt báo cáo nộp. |
-| 2 | **Nguyen Ngoc Phuc** | Member | Triển khai module xác thực (`auth.c`): login/logout, session management bằng static variable, khóa tài khoản sau 3 lần sai, đổi/reset mật khẩu. Triển khai module lưu trữ (`fileio.c`): load/save 3 file `.dat`, atomic save qua `.tmp`/`.bak`, first-run bootstrap tự tạo ADMIN/ADMIN, crash recovery. Thiết kế cấu trúc dữ liệu trong `types.h` (Account, Member, Violation, AppDatabase). Hỗ trợ integration testing và debug các luồng chính. |
-| 3 | **Nguyen Van Phu** | Member | Triển khai module quản lý thành viên (`member.c`): thêm thành viên mới với auto-create account, sửa thông tin với rollback, cascade delete (xóa account + violations + member), xem profile và danh sách phân trang. Triển khai validation (`utils.c`): kiểm tra email, số điện thoại, MSSV. Xử lý logic tính lại tiền phạt khi đổi chức vụ thành viên (`recalcFines`). Kiểm thử CRUD flows và edge cases. |
-| 4 | **Huynh Gia Bao** | Member | Triển khai module vi phạm (`violation.c`): ghi nhận vi phạm với 4 lý do, tính phạt tự động theo role (20k/50k/0), đếm vắng liên tiếp và ngưỡng Out CLB (cảnh báo 3, xác nhận từ 4), xử lý bạo lực (Out CLB không phạt tiền). Triển khai mark paid với tính lại totalFine, self-service view cho thành viên, lọc vi phạm theo ban/ly do/trạng thái, tìm kiếm theo khoảng ngày với chuẩn hóa boundary. |
-| 5 | **Vo Hieu Thang** | Member | Triển khai module báo cáo (`report.c`): thống kê tiền phạt theo 4 ban (đã thu/còn nợ/tổng), sắp xếp thành viên theo số vi phạm bằng pointer-array selection sort, xuất báo cáo ra file `.txt` có timestamp. Triển khai seed data tool (`tools/seed_data.c`) tạo dữ liệu demo nhất quán. Hỗ trợ viết documentation (`docs/`), chuẩn bị demo script, và kiểm tra chất lượng tổng thể trước nộp. |
+| 1 | **Dam Le Tuan Anh** | Team Leader | Designed overall project structure (`types.h`, `Makefile`, module diagram). Coordinated story assignment across epics. Participated in implementing core business flows in `main.c` (BCN menu, member menu, role-based routing). Integrated individual modules into a complete build. Conducted overall code review, coordinated testing, prepared demo, and finalized the submission report. |
+| 2 | **Nguyen Ngoc Phuc** | Member | Implemented authentication module (`auth.c`): login/logout, session management via static variable, account lockout after 3 failed attempts, password change/reset. Implemented persistence module (`fileio.c`): load/save 3 `.dat` files, atomic save via `.tmp`/`.bak`, first-run bootstrap with auto-created ADMIN/ADMIN, crash recovery. Designed data structures in `types.h` (Account, Member, Violation, AppDatabase). Supported integration testing and debugged main flows. |
+| 3 | **Nguyen Van Phu** | Member | Implemented member management module (`member.c`): add new member with auto-create account, edit with rollback, cascade delete (remove account + violations + member), profile view and paginated member list. Implemented validation helpers (`utils.c`): email, phone, and MSSV validation. Handled fine recalculation logic when member role changes (`recalcFines`). Tested CRUD flows and edge cases. |
+| 4 | **Huynh Gia Bao** | Member | Implemented violation module (`violation.c`): record violation with 4 reasons, automatic fine calculation by role (20k/50k/0), consecutive absence tracking and Out CLB threshold (warning at 3, confirmation from 4), violence handling (Out CLB without fine). Implemented mark paid with totalFine recalculation, member self-service views, violation filtering by team/reason/payment status, date-range search with normalized boundaries. |
+| 5 | **Vo Hieu Thang** | Member | Implemented reporting module (`report.c`): fine statistics by 4 teams (collected/outstanding/total), member sorting by violation count using pointer-array selection sort, report export to timestamped `.txt` file. Implemented seed data tool (`tools/seed_data.c`) for consistent demo data. Supported documentation writing (`docs/`), prepared demo script, and performed overall quality checks before submission. |
 
 Evidence sources:
 
-- Module ownership: `src/` and `include/` (mỗi file `.c` tương ứng với 1 thành viên chính).
+- Module ownership: `src/` and `include/` (each `.c` file maps to one primary team member).
 - Story files: `docs/stories/` (1.1–4.4).
 - Architecture: `docs/planning/architecture.md` and `docs/planning/epics.md`.
 - Git history: commits on `main` branch.
