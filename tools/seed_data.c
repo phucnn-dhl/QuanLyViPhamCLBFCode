@@ -9,6 +9,12 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
+
 /* ---- clear: write empty .dat files ---- */
 
 /* ---- helpers ---- */
@@ -70,6 +76,14 @@ static int writeFile(const char *path, const void *data, size_t itemSize, int co
     return 0;
 }
 
+static void ensureDir(const char *dir) {
+#ifdef _WIN32
+    _mkdir(dir);
+#else
+    mkdir(dir, 0755);
+#endif
+}
+
 static int clearData(void) {
     const char *files[] = {"members", "violations", "accounts"};
     char path[256];
@@ -107,24 +121,25 @@ int main(int argc, char *argv[]) {
     makeAccount(&accounts[ac++], "ADMIN", "ADMIN", ACCOUNT_ROLE_BCN);
 
     /* === Members (4 teams, ~3 per team) === */
+    /* totalFine = CHUA THU only (tinh tu violations phia duoi) */
     /* Hoc thuat (0) */
-    makeMember(&members[mc], "SV0001", "Nguyen Van An",     TEAM_ACADEMIC, MEMBER_ROLE_LEADER, 20000, 0, 1); mc++;
-    makeMember(&members[mc], "SV0002", "Tran Thi Bich",     TEAM_ACADEMIC, MEMBER_ROLE_MEMBER, 60000, 2, 3); mc++;
+    makeMember(&members[mc], "SV0001", "Nguyen Van An",     TEAM_ACADEMIC, MEMBER_ROLE_LEADER, 0,     0, 1); mc++;
+    makeMember(&members[mc], "SV0002", "Tran Thi Bich",     TEAM_ACADEMIC, MEMBER_ROLE_MEMBER, 20000, 2, 3); mc++;
     makeMember(&members[mc], "SV0003", "Le Hoang Cuong",    TEAM_ACADEMIC, MEMBER_ROLE_MEMBER, 0,     0, 0); mc++;
 
     /* Ke hoach (1) */
-    makeMember(&members[mc], "SV0004", "Pham Minh Duc",     TEAM_PLANNING, MEMBER_ROLE_LEADER, 40000, 0, 2); mc++;
+    makeMember(&members[mc], "SV0004", "Pham Minh Duc",     TEAM_PLANNING, MEMBER_ROLE_LEADER, 50000, 0, 2); mc++;
     makeMember(&members[mc], "SV0005", "Vo Thi Mai",        TEAM_PLANNING, MEMBER_ROLE_MEMBER, 20000, 1, 1); mc++;
-    makeMember(&members[mc], "SV0006", "Bui Quoc Phong",    TEAM_PLANNING, MEMBER_ROLE_MEMBER, 20000, 0, 1); mc++;
+    makeMember(&members[mc], "SV0006", "Bui Quoc Phong",    TEAM_PLANNING, MEMBER_ROLE_MEMBER, 0,     0, 1); mc++;
 
     /* Nhan su (2) */
     makeMember(&members[mc], "SV0007", "Do Thanh Giang",    TEAM_HR, MEMBER_ROLE_LEADER, 0,     0, 0); mc++;
-    makeMember(&members[mc], "SV0008", "Ngo Thi Hanh",      TEAM_HR, MEMBER_ROLE_MEMBER, 40000, 3, 2); mc++;
-    makeMember(&members[mc], "SV0009", "Ly Minh Kien",      TEAM_HR, MEMBER_ROLE_MEMBER, 20000, 0, 1); mc++;
+    makeMember(&members[mc], "SV0008", "Ngo Thi Hanh",      TEAM_HR, MEMBER_ROLE_MEMBER, 20000, 3, 2); mc++;
+    makeMember(&members[mc], "SV0009", "Ly Minh Kien",      TEAM_HR, MEMBER_ROLE_MEMBER, 0,     0, 1); mc++;
 
     /* Truyen thong (3) */
-    makeMember(&members[mc], "SV0010", "Ha Thanh Long",     TEAM_MEDIA, MEMBER_ROLE_LEADER, 20000, 0, 1); mc++;
-    makeMember(&members[mc], "SV0011", "Dang Thi Ngoc",     TEAM_MEDIA, MEMBER_ROLE_MEMBER, 80000, 4, 4); mc++;
+    makeMember(&members[mc], "SV0010", "Ha Thanh Long",     TEAM_MEDIA, MEMBER_ROLE_LEADER, 0,     0, 1); mc++;
+    makeMember(&members[mc], "SV0011", "Dang Thi Ngoc",     TEAM_MEDIA, MEMBER_ROLE_MEMBER, 40000, 4, 4); mc++;
     makeMember(&members[mc], "SV0012", "Cao Van Phu",       TEAM_MEDIA, MEMBER_ROLE_MEMBER, 0,     0, 0); mc++;
 
     /* BCN members */
@@ -198,6 +213,10 @@ int main(int argc, char *argv[]) {
 #else
     const char *sep = "/";
 #endif
+
+    ensureDir("data");
+    snprintf(path, sizeof(path), "bin%sdata", sep);
+    ensureDir(path);
 
     snprintf(path, sizeof(path), "data%smembers.dat", sep);
     if (writeFile(path, members, sizeof(Member), mc) != 0) return 1;
